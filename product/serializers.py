@@ -3,6 +3,12 @@ from decimal import Decimal
 from product.views import Category
 
 
+class CategorySerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    description = serializers.CharField()
+
+
 
 class ProductSerializer(serializers.Serializer):
     id = serializers.IntegerField()
@@ -28,6 +34,14 @@ class ProductSerializer(serializers.Serializer):
     # to show the category name directly
     # category = serializers.StringRelatedField()
 
+    # to show Categories/Category
+    # category = CategorySerializer()
+
+    # to show categories/category hyperlink
+    category = serializers.HyperlinkedRelatedField(
+        queryset = Category.objects.all(),
+        view_name = 'view-category'
+    )
 
 
     def calc_tax(self, product):
