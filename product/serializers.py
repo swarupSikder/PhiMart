@@ -103,6 +103,12 @@ class ProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Price cannot be negative')
         return price
     
-    def validate(self, attrs):
-        if attrs['password1'] != attrs['password2']:
-            raise serializers.ValidationError("Password doesn't match")
+    # def create(self, validate_data):
+    #     product = Product(**validate_data)
+    #     product.other = 1
+    #     product.save()
+    #     return product
+    
+    # def validate(self, attrs):
+    #     if attrs['password1'] != attrs['password2']:
+    #         raise serializers.ValidationError("Password doesn't match")
