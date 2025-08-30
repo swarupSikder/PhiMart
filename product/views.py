@@ -10,11 +10,21 @@ from django.db.models import Count
 # - - - - - - - - - - - #
 #      All Products     #
 # - - - - - - - - - - - #
-@api_view()
+@api_view(['GET', 'POST'])
 def view_products(request):
-    products = Product.objects.select_related('category').all()
-    serializer = ProductSerializer(products, many=True, context={'request':request})
-    return Response(serializer.data)
+    if request.method == 'GET':
+        products = Product.objects.select_related('category').all()
+        # serializer = ProductSerializer(products, many=True, context={'request':request})
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+    if request.method == 'POST':
+        serializer = ProductSerializer(data=request.data) # Deserializer
+        if serializer.is_valid():
+            print(serializer.validated_data)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
