@@ -95,3 +95,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def calc_tax(self, product):
         return round(product.price * Decimal(1.1), 2)
+    
+
+    # field lvl validation while posting
+    def validate_price(self, price):
+        if price < 0:
+            raise serializers.ValidationError('Price cannot be negative')
+        return price
