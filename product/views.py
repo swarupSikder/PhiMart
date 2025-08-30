@@ -116,6 +116,12 @@ class ViewCategories(APIView):
         categories = Category.objects.annotate(product_count=Count('products')).all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = CategorySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 
@@ -134,9 +140,26 @@ def view_single_category(request, pk):
 class ViewSingleCategory(APIView):
     def get(self, request, pk):
         category = get_object_or_404(
-        Category.objects.annotate(
-            product_count=Count('products')),
+            Category.objects.annotate(product_count=Count('products')),
             pk=pk
         )
         serializer = CategorySerializer(category)
         return Response(serializer.data)
+    
+    def put(self, request, pk):
+        category = get_object_or_404(
+            Category.objects.annotate(product_count=Count('products')),
+            pk=pk
+        )
+        serializer = CategorySerializer(category, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
+    def delete(self, request, pk):
+        category = get_object_or_404(
+            Category.objects.annotate(product_count=Count('products')),
+            pk=pk
+        )
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

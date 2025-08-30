@@ -26,7 +26,7 @@ class CategorySerializer(serializers.ModelSerializer):
     #     count = Product.objects.filter(category=category).count()
     #     return count
 
-    product_count = serializers.IntegerField()
+    product_count = serializers.IntegerField(read_only=True)
 
 
 
