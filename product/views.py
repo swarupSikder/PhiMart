@@ -5,6 +5,7 @@ from product.models import Product, Category
 from product.serializers import ProductSerializer, CategorySerializer
 from django.db.models import Count
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.viewsets import ModelViewSet
 
 
 
@@ -13,39 +14,16 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 # - - - - - - - - - - - #
 #      All Products     #
 # - - - - - - - - - - - #
-class ProductList(ListCreateAPIView):
-    queryset = Product.objects.select_related('category').all()
-    serializer_class = ProductSerializer
-
-    # def get_queryset(self):
-    #     return Product.objects.select_related('category').all()
-    
-    # def get_serializer_class(self):
-    #     return ProductSerializer
-
-    # def get_serializer_context(self):
-    #     return {'request': self.request}
-
-
-
-
-# - - - - - - - - - - - - - #
-#    Single Product View    #
-# - - - - - - - - - - - - - #
-class ProductDetails(RetrieveUpdateDestroyAPIView):
+class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    def delete(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
+    def destroy(self, request, *args, **kwargs):
+        product = self.get_object()   #instance
         if product.stock >= 10:
             return Response({'message': 'Product with stock of more than 10 cannot be deleted!!!'})
-        product.delete()
+        self.perform_destroy(product)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-
-
 
 
 
@@ -53,16 +31,6 @@ class ProductDetails(RetrieveUpdateDestroyAPIView):
 # - - - - - - - - - - - - - #
 #     View All Categories   #
 # - - - - - - - - - - - - - #
-class CategoryList(ListCreateAPIView):
-    queryset = Category.objects.annotate(product_count=Count('products')).all()
-    serializer_class = CategorySerializer
-
-
-
-
-# - - - - - - - - - - - - - #
-#     View Single Category  #
-# - - - - - - - - - - - - - #
-class CategoryDetails(RetrieveUpdateDestroyAPIView):
+class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.annotate(product_count=Count('products')).all()
     serializer_class = CategorySerializer
