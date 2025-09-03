@@ -132,7 +132,7 @@ INTERNAL_IPS = [
 ]
 
 REST_FRAMEWORK = {
-    'COERCE_DECIMAL_TO_STRING': False
+    'COERCE_DECIMAL_TO_STRING': False,
 }
 
 # Default primary key field type
