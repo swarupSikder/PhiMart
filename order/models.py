@@ -1,12 +1,14 @@
 from django.db import models
 from users.models import User 
 from product.models import Product
+from uuid import uuid4
 
 
 # - - - - - - - - - #
 #     Cart Model    #
 # - - - - - - - - - #
 class Cart(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     user = models.OneToOneField(
         User, 
         on_delete=models.CASCADE,
@@ -15,7 +17,7 @@ class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Cart of {self.user.username}"
+        return f"Cart of {self.user.first_name}"
     
 
 
@@ -34,6 +36,9 @@ class CartItem(models.Model):
         on_delete=models.CASCADE,
     )
     quantity = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = [['cart', 'product']]
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
