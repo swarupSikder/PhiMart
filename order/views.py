@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from order.models import Cart, CartItem
-from order.serializers import CartSerializer, CartItemSerializer
+from order.serializers import CartSerializer, CartItemSerializer, AddCartItemSerializer
 
 
 
@@ -13,7 +13,14 @@ class CartViewSet(CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, Gener
 
 
 class CartItemViewSet(ModelViewSet):
-    serializer_class = CartItemSerializer
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return AddCartItemSerializer
+        return CartItemSerializer
+    
+    def get_serializer_context(self):
+        return {'card_id': self.kwargs['cart_pk']}
 
     def get_queryset(self):
         return CartItem.objects.filter(cart_id=self.kwargs['cart_pk'])
